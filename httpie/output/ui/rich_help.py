@@ -148,21 +148,23 @@ def to_help_message(
 
             if opt1 == metavar:
                 metavar = Text('')
-
+ 
             raw_form = argument.serialize()
-            desc = raw_form.get('short_description', '')
+            desc = raw_form.get('description', '').lstrip()
             if raw_form.get('choices'):
                 desc += ' (choices: '
                 desc += ', '.join(raw_form.get('choices'))
                 desc += ')'
 
+            if str(metavar):
+                metavar.append('\n')
+            metavar.append(desc, style='white')
             rows = [
                 Padding(
                     options_highlighter(opt1),
                     LEFT_PADDING_2,
                 ),
-                metavar,
-                options_highlighter(desc),
+                options_highlighter(metavar),
             ]
 
             options_rows.append(rows)
@@ -188,13 +190,12 @@ def to_help_message(
 
     options_table = Table(highlight=False, box=None, show_header=False)
     for group_name, options_rows in group_rows.items():
-        options_table.add_row(Text(), Text(), Text())
+        options_table.add_row(Text(), Text())
         options_table.add_row(
             Text(group_name, style=STYLE_SWITCH),
             Text(),
-            Text(),
         )
-        options_table.add_row(Text(), Text(), Text())
+        options_table.add_row(Text(), Text())
         for row in options_rows:
             options_table.add_row(*row)
 
